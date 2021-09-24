@@ -84,7 +84,7 @@ event LogReceived (uint sku);
     // 1. Set the owner to the transaction sender
     owner = msg.sender;
     // 2. Initialize the sku count to 0. Question, is this necessary?
-    skuCount = 0 ; // Well yes it is, for the way we are structuring this (Looking at the hint now), we +1 the Skucount. Hence it needs to start from 0
+    // skuCount = 0 ; // Well yes it is, for the way we are structuring this (Looking at the hint now), we +1 the Skucount. Hence it needs to start from 0
   }
 
   function addItem(string memory _name, uint _price)  public returns (bool) {
@@ -97,8 +97,8 @@ event LogReceived (uint sku);
       sku: skuCount, 
       price: _price, 
       state: State.ForSale, 
-      seller: payable(msg.sender),  // payables? see if it works without first.
-      buyer: payable(address(0))
+      seller: address(uint160(msg.sender)),  // payables? see if it works without first.
+      buyer: address(uint160(address(0)))
     });
     //
     skuCount = skuCount + 1;
@@ -126,8 +126,9 @@ event LogReceived (uint sku);
 
 
       items[_skuCount].seller.transfer(msg.value - items[_skuCount].price); // BE READY TO CHANGE THIS IF IT FAILS
-      items[_skuCount].buyer =   payable(msg.sender);
+      items[_skuCount].buyer =   address(uint160(msg.sender));
       items[_skuCount].state = State.Sold;
+      emit LogSold(skuCount);
 
 
     }
